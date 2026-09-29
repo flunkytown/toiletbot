@@ -11,7 +11,7 @@ import io
 load_dotenv()
 
 INTENTS = discord.Intents.all()
-MODEL = "qwen3:8b"
+MODEL = "huihui_ai/qwen3-abliterated:0.6b"
 BOTTOKEN = os.getenv("TOKEN")
 ALEXQUOTES = [
     "I'm so unbelievably sorry",
