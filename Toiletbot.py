@@ -106,9 +106,8 @@ async def whatexactlyisilarilisteningtorightnow(ctx):
 async def alexgpt(ctx, prompt: str):
     """talk to the real alex"""
     if not prompt:
-        await ctx.send("no prompt")
-        return
-    response = "yo shit failed to go thru sorry"
+        await ctx.send("bo sent no prompt")
+        return  
     try:
         response = ollama.chat(
             model=MODEL,
@@ -122,16 +121,16 @@ async def alexgpt(ctx, prompt: str):
                     "content": prompt
                 }
             ],
-            top_p=1.0,
-            temperature=1.4,
-            max_completion_tokens=200
+            options={
+                "max_tokens": 200,
+                "temperature": 1.4,
+                "top_p": 1.0
+            }
         )
+
+        await ctx.send(response['message']['content'])
     
     except Exception as e:
-        response = f"yo shit failed to go thru.... sorry..... please dont hit me..... {str(e)}"
-    
-    await ctx.send(response.choices[0].message.content)
-    
-
+        await ctx.send(f"yo shit failed to go thru.... sorry..... please dont hit me..... {str(e)}")
 
 bot.run(BOTTOKEN)
