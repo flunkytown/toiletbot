@@ -107,7 +107,7 @@ async def alexgpt(ctx, prompt: str):
     """talk to the real alex"""
     if not prompt:
         await ctx.send("bo sent no prompt")
-        return  
+        return
     try:
         response = ollama.chat(
             model=MODEL,
@@ -128,9 +128,11 @@ async def alexgpt(ctx, prompt: str):
             }
         )
 
+        if len(response['message']['content']) > 2000:
+            response['message']['content'] = response['message']['content'][:1980]
         await ctx.send(response['message']['content'])
-    
+
     except Exception as e:
         await ctx.send(f"yo shit failed to go thru.... sorry..... please dont hit me..... {str(e)}")
-
+        
 bot.run(BOTTOKEN)
