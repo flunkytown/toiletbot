@@ -36,7 +36,7 @@ bot = commands.Bot(command_prefix="#", intents=INTENTS)
 async def on_ready():
     print(f"toilet town aint ready for me")
     print("------")
-    await bot.get_channel(1535249437176102972).send("whats up toilet town")
+    await bot.get_channel(1535249437176102972).send("whaddup toilet town")
 
 @bot.event
 async def on_raw_reaction_add(payload):
