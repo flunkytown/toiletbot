@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-from groq import Groq
 from dotenv import load_dotenv
 import random
+import ollama
 import os
 import atexit
 import aiohttp
@@ -11,8 +11,7 @@ import io
 load_dotenv()
 
 INTENTS = discord.Intents.all()
-GROQAPIKEY = os.getenv("APIKEY")
-MODEL = "openai/gpt-oss-20b"
+MODEL = "qwen3:8b"
 BOTTOKEN = os.getenv("TOKEN")
 ALEXQUOTES = [
     "I'm so unbelievably sorry",
@@ -110,9 +109,8 @@ async def alexgpt(ctx, prompt: str):
         await ctx.send("no prompt")
         return
     response = "yo shit failed to go thru sorry"
-    client = Groq(api_key=GROQAPIKEY)
     try:
-        response = client.chat.completions.create(
+        response = ollama.chat(
             model=MODEL,
             messages=[
                 {
