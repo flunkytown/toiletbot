@@ -7,6 +7,7 @@ import os
 import atexit
 import aiohttp
 import io
+import asyncio
 
 load_dotenv()
 
@@ -25,6 +26,10 @@ ALEXQUOTES = [
 INTENTS.message_content = True
 bot = commands.Bot(command_prefix="#", intents=INTENTS)
 
+lobotomised_users = [
+    #userid, timer length
+
+]
 
 #-----------------------------------------------------------------------------------------
 #events
@@ -65,7 +70,57 @@ async def on_raw_reaction_add(payload):
                 
                 await target_channel.send(embed=embed)
 
+@bot.event
+async def on_message(message):
+    if message.author.bot or message.guild is None:
+        return
 
+    if any(user_id == message.author.id for user_id, _ in lobotomised_users):
+        try:
+            webhooks = await message.channel.webhooks()
+            webhook = discord.utils.get(webhooks, name="lobotomy")
+            if webhook is None:
+                webhook = await message.channel.create_webhook(name="lobotomy")
+
+            fbacklobotomessages = [
+                "gurrghh",
+                "bleghhhhaeh",
+                "RaErgjh",
+                "oughhh.g..h...g",
+                "buhbuh",
+                "blblbllblblb",
+                "pl",
+                "wtrfvbfhnb",
+                "whats good toilet town"
+            ]
+
+            def lobotomise(message):
+                divmessage = message.content.split()
+                if len(divmessage) <= 3:
+                    divmessage = random.choice(fbacklobotomessages)
+                else:
+                    for i in range(len(divmessage)):
+                        random.shuffle(divmessage)
+                    divmessage = " ".join(divmessage)
+                return divmessage
+
+            
+
+            await webhook.send(
+                content=lobotomise(message),
+                username=message.author.display_name,
+                avatar_url=message.author.display_avatar.url,
+                files=[await attachment.to_file() for attachment in message.attachments],
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
+            await message.delete()
+        except discord.Forbidden:
+            await message.channel.send("no perms broat")
+        except discord.HTTPException:
+            pass
+
+    await bot.process_commands(message)
+        
 #-----------------------------------------------------------------------------------------
 #commands
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- hes supersonic!!! i think hes supersoooonicc!!! -------------------------------------------------------------------------------------
@@ -102,37 +157,55 @@ async def whatexactlyisilarilisteningtorightnow(ctx):
     else:
         await ctx.send(f"{response_msg}\n\n ok love you bye")
         
+# @bot.command()
+# async def alexgpt(ctx, prompt: str):
+#     """talk to the real alex"""
+#     if not prompt:
+#         await ctx.send("bo sent no prompt")
+#         return
+#     try:
+#         response = ollama.chat(
+#             model=MODEL,
+#             messages=[
+#                 {
+#                     "role": "system",
+#                     "content": f"You are Alex. You are casual, a little stupid, oft unintentionally funny, and somewhat nonsensical. You've said many funny things, for example: {ALEXQUOTES}. ONE SENTENCE ONLY."
+#                 },
+#                 {
+#                     "role": "user",
+#                     "content": prompt
+#                 }
+#             ],
+#             options={
+#                 "max_tokens": 200,
+#                 "temperature": 1.4,
+#                 "top_p": 1.0
+#             }
+#         )
+
+#         if len(response['message']['content']) > 2000:
+#             response['message']['content'] = response['message']['content'][:1980]
+#         await ctx.send(response['message']['content'])
+
+#     except Exception as e:
+#         await ctx.send(f"yo shit failed to go thru.... sorry..... please dont hit me..... {str(e)}")
+
 @bot.command()
-async def alexgpt(ctx, prompt: str):
-    """talk to the real alex"""
-    if not prompt:
-        await ctx.send("bo sent no prompt")
+async def lobotomise(ctx, timer: int, user: discord.Member = None):
+    """lobotmise for a given amount of seconds"""
+    if timer < 1:
+        await ctx.send("timer aint 1 second BUDDY")
         return
-    try:
-        response = ollama.chat(
-            model=MODEL,
-            messages=[
-                {
-                    "role": "system",
-                    "content": f"You are Alex. You are casual, a little stupid, oft unintentionally funny, and somewhat nonsensical. You've said many funny things, for example: {ALEXQUOTES}. ONE SENTENCE ONLY."
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            options={
-                "max_tokens": 200,
-                "temperature": 1.4,
-                "top_p": 1.0
-            }
-        )
+    if user is None or user == "@everyone" or user == "@here":
+        user = ctx.author
+    lobotomised_users.append((user.id, timer))
+    await ctx.send(f"{user.display_name} lobotmised 4 {timer} seconds. okay? okay. love you. MWAH kiss kiss bye bye teehee")
 
-        if len(response['message']['content']) > 2000:
-            response['message']['content'] = response['message']['content'][:1980]
-        await ctx.send(response['message']['content'])
+    await asyncio.sleep(timer)
+    lobotomised_users[:] = [
+        entry for entry in lobotomised_users
+        if entry[0] != user.id
+    ]
 
-    except Exception as e:
-        await ctx.send(f"yo shit failed to go thru.... sorry..... please dont hit me..... {str(e)}")
         
 bot.run(BOTTOKEN)
