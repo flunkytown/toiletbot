@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import random
-import ollama
 import os
 import atexit
 import aiohttp
@@ -12,16 +11,15 @@ import asyncio
 load_dotenv()
 
 INTENTS = discord.Intents.all()
-MODEL = "huihui_ai/qwen3-abliterated:0.6b"
 BOTTOKEN = os.getenv("TOKEN")
-ALEXQUOTES = [
-    "I'm so unbelievably sorry",
-    "she was wearing a short skirt",
-    "I'M NOT GAY!!!",
-    "Imagine being this gay bruh I could never \n\n im on the toilet",
-    "coke is not niche",
-    "it was made of bats"  
-]
+# ALEXQUOTES = [
+#     "I'm so unbelievably sorry",
+#     "she was wearing a short skirt",
+#     "I'M NOT GAY!!!",
+#     "Imagine being this gay bruh I could never \n\n im on the toilet",
+#     "coke is not niche",
+#     "it was made of bats"  
+# ]
 
 INTENTS.message_content = True
 NAMES = os.getenv("NAMES", "").split(",")
@@ -74,7 +72,7 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_message(message):
-    if message.author.bot or message.guild is None:
+    if message.guild is None:
         return
 
     if any(user_id == message.author.id for user_id, _ in lobotomised_users):
@@ -155,42 +153,10 @@ async def whatexactlyisilarilisteningtorightnow(ctx):
                 break 
 
     if file_to_send:
-        await ctx.send(f"{response_msg}\n\n ok love you bye", file=file_to_send)
+        await ctx.send(f"{response_msg}", file=file_to_send)
+        await ctx.send("ok love you bye")
     else:
         await ctx.send(f"{response_msg}\n\n ok love you bye")
-        
-# @bot.command()
-# async def alexgpt(ctx, prompt: str):
-#     """talk to the real alex"""
-#     if not prompt:
-#         await ctx.send("bo sent no prompt")
-#         return
-#     try:
-#         response = ollama.chat(
-#             model=MODEL,
-#             messages=[
-#                 {
-#                     "role": "system",
-#                     "content": f"You are Alex. You are casual, a little stupid, oft unintentionally funny, and somewhat nonsensical. You've said many funny things, for example: {ALEXQUOTES}. ONE SENTENCE ONLY."
-#                 },
-#                 {
-#                     "role": "user",
-#                     "content": prompt
-#                 }
-#             ],
-#             options={
-#                 "max_tokens": 200,
-#                 "temperature": 1.4,
-#                 "top_p": 1.0
-#             }
-#         )
-
-#         if len(response['message']['content']) > 2000:
-#             response['message']['content'] = response['message']['content'][:1980]
-#         await ctx.send(response['message']['content'])
-
-#     except Exception as e:
-#         await ctx.send(f"yo shit failed to go thru.... sorry..... please dont hit me..... {str(e)}")
 
 @bot.command()
 async def lobotomise(ctx, timer: int, user: discord.Member = None):
@@ -201,7 +167,7 @@ async def lobotomise(ctx, timer: int, user: discord.Member = None):
     if user is None or user == "@everyone" or user == "@here":
         user = ctx.author
     lobotomised_users.append((user.id, timer))
-    await ctx.send(f"{user.display_name} lobotmised 4 {timer} seconds. okay? okay. love you. MWAH kiss kiss bye bye teehee")
+    await ctx.send(f"{user.display_name} lobotmised for {timer} seconds. okay? okay. love you. MWAH kiss kiss bye bye teehee")
 
     await asyncio.sleep(timer)
     lobotomised_users[:] = [
@@ -213,8 +179,12 @@ async def lobotomise(ctx, timer: int, user: discord.Member = None):
 async def kissmarrykill(ctx):
     """kiss marry kill"""
     names = random.sample(NAMES, 3)
-    await ctx.send(f"ok here r youre three random names: {', '.join(names)} \nok now choose who to kiss who to marry and who to kill ok love you MWWWWAH")
-    await ctx.send("this command dont do anything else lmao")
+    if ctx.author.id == 756720223519768649:
+        await ctx.send(f"ok here r youre three random names: {', '.join(names)} \nok now choose who to highfive who to marry and who to kill ok stupid chud who doesnt like kissing hahah")
+    else:
+        await ctx.send(f"ok here r youre three random names: {', '.join(names)} \nok now choose who to kiss who to marry and who to kill ok love you MWWWWAH")
+    #await ctx.send("this command dont do anything else lmao")
+
 
         
 bot.run(BOTTOKEN)
