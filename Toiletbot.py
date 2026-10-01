@@ -24,6 +24,8 @@ ALEXQUOTES = [
 ]
 
 INTENTS.message_content = True
+NAMES = os.getenv("NAMES", "").split(",")
+
 bot = commands.Bot(command_prefix="#", intents=INTENTS)
 
 lobotomised_users = [
@@ -206,6 +208,13 @@ async def lobotomise(ctx, timer: int, user: discord.Member = None):
         entry for entry in lobotomised_users
         if entry[0] != user.id
     ]
+
+@bot.command()
+async def kissmarrykill(ctx):
+    """kiss marry kill"""
+    names = random.sample(NAMES, 3)
+    await ctx.send(f"ok here r youre three random names: {', '.join(names)} \nok now choose who to kiss who to marry and who to kill ok love you MWWWWAH")
+    await ctx.send("this command dont do anything else lmao")
 
         
 bot.run(BOTTOKEN)
